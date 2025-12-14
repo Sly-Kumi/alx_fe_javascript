@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dynamic Quote Generator</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 20px;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
+
+    h1, h3 {
+      text-align: center;
+    }
+
     select, input, button {
+      padding: 8px;
       margin: 5px 0;
-      padding: 6px;
+      width: 100%;
     }
+
+    button {
+      cursor: pointer;
+    }
+
     #quoteDisplay {
       margin: 20px 0;
-      font-size: 18px;
-      font-weight: bold;
+      padding: 20px;
+      border: 1px solid #ccc;
+      min-height: 60px;
+      font-style: italic;
+    }
+
+    #syncStatus {
+      margin-top: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -26,26 +46,28 @@
   <h1>Dynamic Quote Generator</h1>
 
   <!-- CATEGORY FILTER -->
-  <label for="categoryFilter">Filter by category:</label>
-  <select id="categoryFilter" onchange="filterQuotes()">
-    <option value="all">All Categories</option>
-  </select>
+  <select id="categoryFilter"></select>
 
   <!-- QUOTE DISPLAY -->
-  <div id="quoteDisplay">Select a category or click "Show New Quote"</div>
+  <div id="quoteDisplay">Click "Show New Quote"</div>
 
-  <button onclick="showRandomQuote()">Show New Quote</button>
+  <button id="newQuote">Show New Quote</button>
 
   <!-- ADD QUOTE -->
   <h3>Add a New Quote</h3>
-  <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
-  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+  <input id="newQuoteText" type="text" placeholder="Enter a new quote">
+  <input id="newQuoteCategory" type="text" placeholder="Enter quote category">
   <button onclick="addQuote()">Add Quote</button>
 
   <!-- IMPORT / EXPORT -->
   <h3>Import / Export Quotes</h3>
-  <button onclick="exportToJson()">Export Quotes (JSON)</button><br><br>
-  <input type="file" accept=".json" onchange="importFromJsonFile(event)" />
+  <button onclick="exportToJson()">Export Quotes</button>
+  <input type="file" accept=".json" onchange="importFromJsonFile(event)">
+
+  <!-- SERVER SYNC -->
+  <h3>Server Sync</h3>
+  <button onclick="syncWithServer()">Sync Now</button>
+  <p id="syncStatus"></p>
 
   <script src="script.js"></script>
 </body>
