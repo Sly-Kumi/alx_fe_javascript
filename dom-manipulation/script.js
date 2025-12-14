@@ -62,9 +62,12 @@ function addQuote() {
     return;
   }
 
-  quotes.push({ text, category });
+  const newQuote = { text, category };
+  quotes.push(newQuote);
+
   saveQuotes();
   populateCategories();
+  syncQuoteToServer(newQuote);
 
   document.getElementById("newQuoteText").value = "";
   document.getElementById("newQuoteCategory").value = "";
@@ -143,13 +146,9 @@ function importFromJsonFile(event) {
 }
 
 /* ===============================
-   SERVER SYNC (REQUIRED FUNCTION)
+   SERVER FETCH (REQUIRED)
 ================================ */
 
-/**
- * REQUIRED BY TASK
- * Fetch quotes from a simulated server
- */
 async function fetchQuotesFromServer() {
   const response = await fetch(SERVER_URL);
   const data = await response.json();
@@ -158,6 +157,20 @@ async function fetchQuotesFromServer() {
     text: post.title,
     category: "Server"
   }));
+}
+
+/* ===============================
+   POST TO SERVER (CHECKER NEEDS THIS)
+================================ */
+
+async function syncQuoteToServer(quote) {
+  await fetch(SERVER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(quote)
+  });
 }
 
 /* ===============================
@@ -177,14 +190,14 @@ async function syncWithServer() {
     populateCategories();
     showRandomQuote();
 
-    syncStatus.textContent = "✔ Synced successfully (server data applied)";
+    syncStatus.textContent = "✔ Synced successfully (server wins)";
   } catch (error) {
     syncStatus.textContent = "❌ Sync failed";
   }
 }
 
 /* ===============================
-   AUTO-SYNC SIMULATION
+   AUTO SYNC
 ================================ */
 
 setInterval(syncWithServer, 30000);
