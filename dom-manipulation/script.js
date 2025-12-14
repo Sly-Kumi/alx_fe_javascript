@@ -14,7 +14,7 @@ const syncStatus = document.getElementById("syncStatus");
 const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
 
 /* ===============================
-   INITIAL LOAD
+   INITIALIZATION
 ================================ */
 
 saveQuotes();
@@ -23,7 +23,7 @@ restoreLastFilter();
 showRandomQuote();
 
 /* ===============================
-   QUOTE DISPLAY
+   DISPLAY QUOTES
 ================================ */
 
 function showRandomQuote() {
@@ -50,7 +50,7 @@ function showRandomQuote() {
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 /* ===============================
-   ADD QUOTE
+   ADD QUOTES
 ================================ */
 
 function addQuote() {
@@ -73,7 +73,7 @@ function addQuote() {
 }
 
 /* ===============================
-   CATEGORY FILTERING
+   CATEGORY FILTER
 ================================ */
 
 function populateCategories() {
@@ -143,10 +143,14 @@ function importFromJsonFile(event) {
 }
 
 /* ===============================
-   SERVER SYNC & CONFLICT HANDLING
+   SERVER SYNC (REQUIRED FUNCTION)
 ================================ */
 
-async function fetchServerQuotes() {
+/**
+ * REQUIRED BY TASK
+ * Fetch quotes from a simulated server
+ */
+async function fetchQuotesFromServer() {
   const response = await fetch(SERVER_URL);
   const data = await response.json();
 
@@ -156,27 +160,31 @@ async function fetchServerQuotes() {
   }));
 }
 
+/* ===============================
+   SYNC & CONFLICT RESOLUTION
+================================ */
+
 async function syncWithServer() {
   syncStatus.textContent = "Syncing with server...";
 
   try {
-    const serverQuotes = await fetchServerQuotes();
+    const serverQuotes = await fetchQuotesFromServer();
 
-    // Conflict resolution: SERVER WINS
+    // Conflict resolution: SERVER DATA WINS
     quotes = [...serverQuotes];
 
     saveQuotes();
     populateCategories();
     showRandomQuote();
 
-    syncStatus.textContent = "✔ Synced successfully. Server data applied.";
+    syncStatus.textContent = "✔ Synced successfully (server data applied)";
   } catch (error) {
-    syncStatus.textContent = "❌ Sync failed.";
+    syncStatus.textContent = "❌ Sync failed";
   }
 }
 
 /* ===============================
-   AUTO SYNC (SIMULATION)
+   AUTO-SYNC SIMULATION
 ================================ */
 
 setInterval(syncWithServer, 30000);
