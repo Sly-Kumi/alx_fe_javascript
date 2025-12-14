@@ -1,34 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dynamic Quote Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    select, input, button {
+      margin: 5px 0;
+      padding: 6px;
+    }
+    #quoteDisplay {
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
   <h1>Dynamic Quote Generator</h1>
 
-  <!-- Quote Display -->
-  <div id="quoteDisplay" style="margin: 20px 0; font-size: 20px;"></div>
+  <!-- CATEGORY FILTER -->
+  <label for="categoryFilter">Filter by category:</label>
+  <select id="categoryFilter" onchange="filterQuotes()">
+    <option value="all">All Categories</option>
+  </select>
 
-  <!-- Buttons -->
-  <button id="newQuote">Show New Quote</button>
-  <button onclick="exportQuotes()">Export Quotes (JSON)</button>
+  <!-- QUOTE DISPLAY -->
+  <div id="quoteDisplay">Select a category or click "Show New Quote"</div>
 
-  <br><br>
+  <button onclick="showRandomQuote()">Show New Quote</button>
 
-  <!-- Add Quote -->
-  <div>
-    <input id="newQuoteText" type="text" placeholder="Enter a new quote">
-    <input id="newQuoteCategory" type="text" placeholder="Enter quote category">
-    <button onclick="addQuote()">Add Quote</button>
-  </div>
+  <!-- ADD QUOTE -->
+  <h3>Add a New Quote</h3>
+  <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+  <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+  <button onclick="addQuote()">Add Quote</button>
 
-  <br>
-
-  <!-- Import JSON -->
-  <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)">
+  <!-- IMPORT / EXPORT -->
+  <h3>Import / Export Quotes</h3>
+  <button onclick="exportToJson()">Export Quotes (JSON)</button><br><br>
+  <input type="file" accept=".json" onchange="importFromJsonFile(event)" />
 
   <script src="script.js"></script>
 </body>
