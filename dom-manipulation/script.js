@@ -21,6 +21,7 @@ saveQuotes();
 populateCategories();
 restoreLastFilter();
 showRandomQuote();
+syncQuotes();
 
 /* ===============================
    DISPLAY QUOTES
@@ -43,8 +44,6 @@ function showRandomQuote() {
     filteredQuotes[Math.floor(Math.random() * filteredQuotes.length)];
 
   quoteDisplay.textContent = `"${randomQuote.text}" — ${randomQuote.category}`;
-
-  sessionStorage.setItem("lastViewedQuote", randomQuote.text);
 }
 
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
@@ -69,9 +68,6 @@ function addQuote() {
   populateCategories();
   syncQuoteToServer(newQuote);
 
-  document.getElementById("newQuoteText").value = "";
-  document.getElementById("newQuoteCategory").value = "";
-
   alert("Quote added successfully!");
 }
 
@@ -81,7 +77,6 @@ function addQuote() {
 
 function populateCategories() {
   const categories = ["all", ...new Set(quotes.map(q => q.category))];
-
   categoryFilter.innerHTML = "";
 
   categories.forEach(category => {
@@ -99,9 +94,7 @@ categoryFilter.addEventListener("change", () => {
 
 function restoreLastFilter() {
   const savedCategory = localStorage.getItem("lastCategory");
-  if (savedCategory) {
-    categoryFilter.value = savedCategory;
-  }
+  if (savedCategory) categoryFilter.value = savedCategory;
 }
 
 /* ===============================
@@ -113,7 +106,7 @@ function saveQuotes() {
 }
 
 /* ===============================
-   JSON EXPORT / IMPORT
+   JSON IMPORT / EXPORT
 ================================ */
 
 function exportToJson() {
@@ -132,9 +125,9 @@ function exportToJson() {
 }
 
 function importFromJsonFile(event) {
-  const fileReader = new FileReader();
+  const reader = new FileReader();
 
-  fileReader.onload = function (e) {
+  reader.onload = function (e) {
     const importedQuotes = JSON.parse(e.target.result);
     quotes.push(...importedQuotes);
     saveQuotes();
@@ -142,11 +135,11 @@ function importFromJsonFile(event) {
     alert("Quotes imported successfully!");
   };
 
-  fileReader.readAsText(event.target.files[0]);
+  reader.readAsText(event.target.files[0]);
 }
 
 /* ===============================
-   SERVER FETCH (REQUIRED)
+   SERVER FETCH
 ================================ */
 
 async function fetchQuotesFromServer() {
@@ -160,7 +153,7 @@ async function fetchQuotesFromServer() {
 }
 
 /* ===============================
-   POST TO SERVER (CHECKER NEEDS THIS)
+   POST TO SERVER (REQUIRED)
 ================================ */
 
 async function syncQuoteToServer(quote) {
@@ -174,30 +167,31 @@ async function syncQuoteToServer(quote) {
 }
 
 /* ===============================
-   SYNC & CONFLICT RESOLUTION
+   SYNC QUOTES (REQUIRED NAME)
 ================================ */
 
-async function syncWithServer() {
-  syncStatus.textContent = "Syncing with server...";
+async function syncQuotes() {
+  syncStatus.textContent = "Syncing quotes with server...";
 
   try {
     const serverQuotes = await fetchQuotesFromServer();
 
-    // Conflict resolution: SERVER DATA WINS
-    quotes = [...serverQuotes];
+    /* Conflict resolution:
+       Server data takes precedence */
+    quotes = serverQuotes;
 
     saveQuotes();
     populateCategories();
     showRandomQuote();
 
-    syncStatus.textContent = "✔ Synced successfully (server wins)";
+    syncStatus.textContent = "✔ Quotes synced successfully (server wins)";
   } catch (error) {
     syncStatus.textContent = "❌ Sync failed";
   }
 }
 
 /* ===============================
-   AUTO SYNC
+   PERIODIC SYNC (REQUIRED)
 ================================ */
 
-setInterval(syncWithServer, 30000);
+setInterval(syncQuotes, 30000);
